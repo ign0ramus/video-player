@@ -1,6 +1,7 @@
 const video = document.querySelector('video');
 const progressRange = document.querySelector('.progress-range');
 const progressBar = document.querySelector('.progress-bar');
+const player = document.querySelector('.player');
 const playBtn = document.getElementById('play-btn');
 const volumeIcon = document.getElementById('volume');
 const volumeRange = document.querySelector('.volume-range');
@@ -93,6 +94,64 @@ function changeSpeed() {
 }
 
 // Fullscreen -------------------------------- //
+let fullscreen = false;
+
+/* View in fullscreen */
+function openFullscreen(elem) {
+	if (elem.requestFullscreen) {
+		elem.requestFullscreen();
+	} else if (elem.mozRequestFullScreen) {
+		/* Firefox */
+		elem.mozRequestFullScreen();
+	} else if (elem.webkitRequestFullscreen) {
+		/* Chrome, Safari and Opera */
+		elem.webkitRequestFullscreen();
+	} else if (elem.msRequestFullscreen) {
+		/* IE/Edge */
+		elem.msRequestFullscreen();
+	}
+
+	video.classList.add('video-fullscreen');
+}
+
+/* Close fullscreen */
+function closeFullscreen() {
+	if (document.exitFullscreen) {
+		document.exitFullscreen();
+	} else if (document.mozCancelFullScreen) {
+		/* Firefox */
+		document.mozCancelFullScreen();
+	} else if (document.webkitExitFullscreen) {
+		/* Chrome, Safari and Opera */
+		document.webkitExitFullscreen();
+	} else if (document.msExitFullscreen) {
+		/* IE/Edge */
+		document.msExitFullscreen();
+	}
+	video.classList.remove('video-fullscreen');
+}
+
+function toggleFullscreen() {
+	if (fullscreen) {
+		closeFullscreen();
+	} else {
+		openFullscreen(player);
+	}
+
+	fullscreen = !fullscreen;
+}
+
+function exitHandler() {
+	if (
+		!document.fullscreenElement &&
+		!document.webkitIsFullScreen &&
+		!document.mozFullScreen &&
+		!document.msFullscreenElement
+	) {
+		video.classList.remove('video-fullscreen');
+		fullscreen = false;
+	}
+}
 
 // Event listeners --------------------------- //
 playBtn.addEventListener('click', togglePlay);
@@ -104,3 +163,8 @@ progressRange.addEventListener('click', setProgress);
 volumeRange.addEventListener('click', changeVolume);
 volumeIcon.addEventListener('click', toggleMute);
 speed.addEventListener('change', changeSpeed);
+fullscreenBtn.addEventListener('click', toggleFullscreen);
+document.addEventListener('fullscreenchange', exitHandler);
+document.addEventListener('webkitfullscreenchange', exitHandler);
+document.addEventListener('mozfullscreenchange', exitHandler);
+document.addEventListener('MSFullscreenChange', exitHandler);
